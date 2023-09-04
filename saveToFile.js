@@ -9,5 +9,5 @@ function saveToFile(content, fileName) {
   document.body.appendChild(a);
 }
 
-const foo = 'save this text to file!';
-saveToFile(foo, 'saved.txt');
+const testSave = 'save this text to file!';
+saveToFile(testSave, 'saved.txt');

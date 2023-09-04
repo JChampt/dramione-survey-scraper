@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const filePath = 'scraped.json';
+const filePath = 'redditAPICommentTree.json';
 const regexPattern = /"in[0-9a-z]{5}"/g;
 
 const matchedResults = extractMatchesFromFile(filePath, regexPattern);
