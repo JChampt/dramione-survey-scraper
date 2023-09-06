@@ -86,11 +86,17 @@ function printBody(thread) {
 
 function countComments(thread) {
   const comments = thread.comments;
-  let count = 0;
+  let totalTopLevelComments = 0;
+  let totalComments = 0;
 
   for (let i = 0; i < comments.length; i++) {
-    count += comments[i].replies.length;
+    const topLevelComment = comments[i];
+    if (topLevelComment.body.startsWith('CATEGORY') !== true) continue;
+
+    ++totalTopLevelComments;
+    totalComments += topLevelComment.replies.length;
   }
 
-  console.log('Total comments:', count);
+  console.log('Total top level comments:', totalTopLevelComments);
+  console.log('Total comments:', totalComments);
 }
