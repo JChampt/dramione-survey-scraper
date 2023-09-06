@@ -4,7 +4,7 @@ const fs = require('fs');
 const megaThread2022ID = 'x60ake';
 const megaThread2023ID = '163lqu4';
 
-let thread;
+let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
 getThread(megaThread2023ID, 2);
 
 // let [title, , author, , link] = commentsJSON.comments[2].replies[0].body.split('\n');
@@ -17,14 +17,18 @@ function getThread(threadID, depth = Infinity) {
   const r = new snoowrap(JSON.parse(OAuth));
 
   r.config({
-    requestDelay: 300,
+    requestDelay: 400,
     continueAfterRatelimitError: true,
   });
+
+  console.log('Fetching thread ...');
 
   r.getSubmission(threadID)
     .expandReplies({ limit: Infinity, depth: depth })
     .then((res) => {
       thread = res.toJSON();
+      console.log('Got thread!');
+      countComments(thread);
     });
 }
 
@@ -45,5 +49,5 @@ function countComments(thread) {
     count += comments[i].replies.length;
   }
 
-  console.log(count);
+  console.log('Total comments:', count);
 }
