@@ -3,9 +3,13 @@ const fs = require('fs');
 
 const megaThread2022ID = 'x60ake';
 const megaThread2023ID = '163lqu4';
+const replyDepth = 2;
+const minimumSafeRequestDelay = 400;
 
+const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // using data from file rather than loading live everytime
 let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
-getThread(megaThread2023ID, 2);
+
+// getThread(megaThread2023ID, replyDepth);
 
 // let [title, , author, , link] = commentsJSON.comments[2].replies[0].body.split('\n');
 // deconstruct the body of a reply.  I can't address the commments json until it is done fetching via API though, so I probably need to put
@@ -17,7 +21,7 @@ function getThread(threadID, depth = Infinity) {
   const r = new snoowrap(JSON.parse(OAuth));
 
   r.config({
-    requestDelay: 400,
+    requestDelay: minimumSafeRequestDelay,
     continueAfterRatelimitError: true,
   });
 
