@@ -9,11 +9,9 @@ const minimumSafeRequestDelay = 400;
 const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // using data from file rather than loading live everytime
 let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
 
-// getThread(megaThread2023ID, replyDepth);
-
-// let [title, , author, , link] = commentsJSON.comments[2].replies[0].body.split('\n');
-// deconstruct the body of a reply.  I can't address the commments json until it is done fetching via API though, so I probably need to put
-// a delay here that checks to see if data has been gotten yet, and if not to wait half a second and try again.
+function writeCSV() {
+  fs.writeFileSync('./output.csv', parseThread(testData));
+}
 
 function parseThread(threadData) {
   const csvOut = [];
@@ -21,28 +19,39 @@ function parseThread(threadData) {
 
   for (let i = 0; i < comments.length; i++) {
     const rootComment = comments[i];
-    const category = rootComment.body;
-    if (category !== '[removed]') {
-      iterateReplies(category, rootComment.replies);
-    }
+    const category = getCategory(rootComment);
+
+    iterateReplies(category, rootComment.replies);
   }
 
   return csvOut.join('\n');
 
+  function getCategory(rootComment) {
+    const category = rootComment.body;
+
+    return category.startsWith(
+      'CATEGORY: Best New Author (published their first'
+    )
+      ? 'CATEGORY: Best New Author'
+      : category;
+  }
+
   function iterateReplies(category, replies) {
+    if (category.startsWith('CATEGORY') !== true) {
+      return null;
+    }
+
     for (let i = 0; i < replies.length; i++) {
       const reply = replies[i];
       csvOut.push(`${category},${parseBody(reply)}`);
     }
+
+    csvOut.push('\n');
   }
 
   function parseBody(commentBody) {
     return 'title,author,link,ups';
   }
-}
-
-function writeCSV() {
-  fs.writeFileSync('./output.csv', parseThread(testData));
 }
 
 // Extracting every comment on a thread using API wrapper snoowrap
