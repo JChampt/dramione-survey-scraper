@@ -13,6 +13,10 @@ function writeCSV() {
   fs.writeFileSync('./output.csv', parseThread(testData));
 }
 
+function removeCommas(text) {
+  return text.replace(/,/g, '');
+}
+
 function parseThread(threadData) {
   const csvOut = [];
   const comments = threadData.comments;
@@ -27,7 +31,8 @@ function parseThread(threadData) {
   return csvOut.join('\n');
 
   function getCategory(topLevelComment) {
-    const category = topLevelComment.body.replace(/,/g, '');
+    // const category = topLevelComment.body.replace(/,/g, '');
+    const category = removeCommas(topLevelComment.body);
 
     return category.startsWith(
       'CATEGORY: Best New Author (published their first'
@@ -43,14 +48,35 @@ function parseThread(threadData) {
 
     for (let i = 0; i < replies.length; i++) {
       const reply = replies[i];
-      csvOut.push(`${category},${parseBody(reply)}`);
+      csvOut.push(`${category},${parseBody(reply.body)},${reply.ups}`);
     }
 
     csvOut.push('');
   }
 
   function parseBody(commentBody) {
-    return 'title,author,link,ups';
+    // "Title: How Soon is Now?\n\nAuthor: Nelpher\n\nLink: https://archiveofourown.org/works/11561607"
+    const lines = commentBody.split('\n');
+    let title, author, link;
+
+    for (const line of lines) {
+      if (line.startsWith('Title: ')) {
+        title = line.substring('Title: '.length).trim();
+        title = removeCommas(title);
+      }
+
+      if (line.startsWith('Author: ')) {
+        author = line.substring('Author: '.length).trim();
+        author = removeCommas(author);
+      }
+
+      if (line.startsWith('Link: ')) {
+        link = line.substring('Link: '.length).trim();
+        link = removeCommas(link);
+      }
+    }
+
+    return `${title},${author},${link}`;
   }
 }
 
