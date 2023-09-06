@@ -15,6 +15,36 @@ let thread; //global variable.  Not ideal but this is how I am doing it until I 
 // deconstruct the body of a reply.  I can't address the commments json until it is done fetching via API though, so I probably need to put
 // a delay here that checks to see if data has been gotten yet, and if not to wait half a second and try again.
 
+function parseThread(threadData) {
+  const csvOut = [];
+  const comments = threadData.comments;
+
+  for (let i = 0; i < comments.length; i++) {
+    const rootComment = comments[i];
+    const category = rootComment.body;
+    if (category !== '[removed]') {
+      iterateReplies(category, rootComment.replies);
+    }
+  }
+
+  return csvOut.join('\n');
+
+  function iterateReplies(category, replies) {
+    for (let i = 0; i < replies.length; i++) {
+      const reply = replies[i];
+      csvOut.push(`${category},${parseBody(reply)}`);
+    }
+  }
+
+  function parseBody(commentBody) {
+    return 'title,author,link,ups';
+  }
+}
+
+function writeCSV() {
+  fs.writeFileSync('./output.csv', parseThread(testData));
+}
+
 // Extracting every comment on a thread using API wrapper snoowrap
 function getThread(threadID, depth = Infinity) {
   const OAuth = fs.readFileSync('./OAuth.json', 'utf8');
