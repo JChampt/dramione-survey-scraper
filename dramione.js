@@ -46,7 +46,7 @@ function parseThread(threadData) {
       csvOut.push(`${category},${parseBody(reply)}`);
     }
 
-    csvOut.push('\n');
+    csvOut.push('');
   }
 
   function parseBody(commentBody) {
@@ -94,5 +94,3 @@ function countComments(thread) {
 
   console.log('Total comments:', count);
 }
-
-const bar = "hello's world";
