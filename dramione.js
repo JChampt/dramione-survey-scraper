@@ -27,7 +27,7 @@ function parseThread(threadData) {
   return csvOut.join('\n');
 
   function getCategory(rootComment) {
-    const category = rootComment.body;
+    const category = rootComment.body.replace(/,/g, '');
 
     return category.startsWith(
       'CATEGORY: Best New Author (published their first'
@@ -94,3 +94,5 @@ function countComments(thread) {
 
   console.log('Total comments:', count);
 }
+
+const bar = "hello's world";
