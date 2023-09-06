@@ -55,26 +55,36 @@ function parseThread(threadData) {
   }
 
   function parseBody(commentBody) {
-    // "Title: How Soon is Now?\n\nAuthor: Nelpher\n\nLink: https://archiveofourown.org/works/11561607"
-    const lines = commentBody.split('\n');
+    const lines = removeCommas(commentBody).split('\n');
     let title, author, link;
 
     for (const line of lines) {
       if (line.startsWith('Title: ')) {
         title = line.substring('Title: '.length).trim();
-        title = removeCommas(title);
       }
 
       if (line.startsWith('Author: ')) {
         author = line.substring('Author: '.length).trim();
-        author = removeCommas(author);
       }
 
       if (line.startsWith('Link: ')) {
         link = line.substring('Link: '.length).trim();
-        link = removeCommas(link);
       }
     }
+
+    return `${title},${author},${link}`;
+  }
+
+  function extractInfoWithRegex(commentBody) {
+    const text = removeCommas(commentBody);
+
+    const titleMatch = text.match(/Title: (.+)\n/);
+    const authorMatch = text.match(/Author: (.+)\n/);
+    const linkMatch = text.match(/Link: (.+)/);
+
+    const title = titleMatch ? titleMatch[1] : '';
+    const author = authorMatch ? authorMatch[1] : '';
+    const link = linkMatch ? linkMatch[1] : '';
 
     return `${title},${author},${link}`;
   }
