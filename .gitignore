@@ -2,3 +2,5 @@ node_modules
 ./children.txt
 OAuth.json
 rootComment.json
+thread.json
+redditAPICommentTree.json
