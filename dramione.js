@@ -18,16 +18,16 @@ function parseThread(threadData) {
   const comments = threadData.comments;
 
   for (let i = 0; i < comments.length; i++) {
-    const rootComment = comments[i];
-    const category = getCategory(rootComment);
+    const topLevelComment = comments[i];
+    const category = getCategory(topLevelComment);
 
-    iterateReplies(category, rootComment.replies);
+    iterateReplies(category, topLevelComment.replies);
   }
 
   return csvOut.join('\n');
 
-  function getCategory(rootComment) {
-    const category = rootComment.body.replace(/,/g, '');
+  function getCategory(topLevelComment) {
+    const category = topLevelComment.body.replace(/,/g, '');
 
     return category.startsWith(
       'CATEGORY: Best New Author (published their first'
