@@ -8,11 +8,13 @@ const minimumSafeRequestDelay = 400;
 
 const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // using data from file rather than loading live everytime
 let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
+const errOut = [];
 
 writeCSV();
 
 function writeCSV() {
   fs.writeFileSync('./output.csv', parseThread(testData));
+  fs.writeFileSync('./err.txt', errOut.join('\n'));
 }
 
 function parseThread(threadData) {
@@ -47,7 +49,10 @@ function parseThread(threadData) {
 
     for (let i = 0; i < replies.length; i++) {
       const reply = replies[i];
-      res.push(`${category},${parseBody(reply.body)},${reply.ups}`);
+      const parsedBody = extractInfoWithRegex(reply.body);
+
+      if (parsedBody.includes('FixMe')) errOut.push(reply.body);
+      res.push(`${category},${parsedBody},${reply.ups}`);
     }
 
     return res;
@@ -81,9 +86,12 @@ function parseThread(threadData) {
     const authorMatch = text.match(/Author: (.+)\n/);
     const linkMatch = text.match(/Link: (.+)/);
 
-    const title = titleMatch ? titleMatch[1] : '';
-    const author = authorMatch ? authorMatch[1] : '';
-    const link = linkMatch ? linkMatch[1] : '';
+    const title = titleMatch ? titleMatch[1] : 'FixMe';
+    const author = authorMatch ? authorMatch[1] : 'FixMe';
+    const link = linkMatch ? linkMatch[1] : 'FixMe';
+
+    // if (title === 'FixMe' || author === 'FixMe' || link === 'FixMe')
+    // console.log(commentBody);
 
     return `${title},${author},${link}`;
   }
