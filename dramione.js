@@ -9,23 +9,24 @@ const minimumSafeRequestDelay = 400;
 const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // using data from file rather than loading live everytime
 let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
 
+writeCSV();
+
 function writeCSV() {
   fs.writeFileSync('./output.csv', parseThread(testData));
 }
 
 function parseThread(threadData) {
-  const csvOut = []; // I really shouldn't be mutating this with subfunctions.  I'll have to refactor this.
+  const csvOut = [];
   const comments = threadData.comments;
 
   for (let i = 0; i < comments.length; i++) {
     const topLevelComment = comments[i];
     const category = getCategory(topLevelComment);
-    if (category.startsWith('CATEGORY') !== true) {
-      continue;
-    }
+
+    if (category.startsWith('CATEGORY') !== true) continue;
 
     csvOut.push(` ,${category},${category}`);
-    iterateReplies(category, topLevelComment.replies);
+    csvOut.push(...iterateReplies(category, topLevelComment.replies));
     csvOut.push('');
   }
 
@@ -42,14 +43,14 @@ function parseThread(threadData) {
   }
 
   function iterateReplies(category, replies) {
-    if (category.startsWith('CATEGORY') !== true) {
-      return null;
-    }
+    const res = [];
 
     for (let i = 0; i < replies.length; i++) {
       const reply = replies[i];
-      csvOut.push(`${category},${parseBody(reply.body)},${reply.ups}`);
+      res.push(`${category},${parseBody(reply.body)},${reply.ups}`);
     }
+
+    return res;
   }
 
   function parseBody(commentBody) {
