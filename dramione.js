@@ -13,25 +13,25 @@ function writeCSV() {
   fs.writeFileSync('./output.csv', parseThread(testData));
 }
 
-function removeCommas(text) {
-  return text.replace(/,/g, '');
-}
-
 function parseThread(threadData) {
-  const csvOut = [];
+  const csvOut = []; // I really shouldn't be mutating this with subfunctions.  I'll have to refactor this.
   const comments = threadData.comments;
 
   for (let i = 0; i < comments.length; i++) {
     const topLevelComment = comments[i];
     const category = getCategory(topLevelComment);
+    if (category.startsWith('CATEGORY') !== true) {
+      continue;
+    }
 
+    csvOut.push(` ,${category},${category}`);
     iterateReplies(category, topLevelComment.replies);
+    csvOut.push('');
   }
 
   return csvOut.join('\n');
 
   function getCategory(topLevelComment) {
-    // const category = topLevelComment.body.replace(/,/g, '');
     const category = removeCommas(topLevelComment.body);
 
     return category.startsWith(
@@ -50,8 +50,6 @@ function parseThread(threadData) {
       const reply = replies[i];
       csvOut.push(`${category},${parseBody(reply.body)},${reply.ups}`);
     }
-
-    csvOut.push('');
   }
 
   function parseBody(commentBody) {
@@ -88,6 +86,10 @@ function parseThread(threadData) {
 
     return `${title},${author},${link}`;
   }
+}
+
+function removeCommas(text) {
+  return text.replace(/,/g, '');
 }
 
 // Extracting every comment on a thread using API wrapper snoowrap
