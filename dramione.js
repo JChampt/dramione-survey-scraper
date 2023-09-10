@@ -48,7 +48,7 @@ function makeCSV(threadData) {
 
     if (category.startsWith('CATEGORY') !== true) continue;
 
-    csvOut.push(` ,${category},${category}`);
+    csvOut.push(` ,${category},${category},,${topLevelComment.ups}`);
     csvOut.push(...iterateReplies(category, topLevelComment.replies));
     csvOut.push('');
   }
