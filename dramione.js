@@ -1,22 +1,44 @@
 const snoowrap = require('snoowrap');
 const fs = require('fs');
 
-const megaThread2022ID = 'x60ake';
+// const megaThread2022ID = 'x60ake';
 const megaThread2023ID = '163lqu4';
 const replyDepth = 2;
 const minimumSafeRequestDelay = 400;
 
-const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // using data from file rather than loading live everytime
-let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
-const errOut = [];
+// let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
 
-// test();
-function test() {
-  fs.writeFileSync('./output.csv', parseThread(testData));
-  fs.writeFileSync('./err.txt', errOut.join('\n'));
+run();
+
+// Extracting every comment on a thread using API wrapper snoowrap
+function run(
+  threadID = megaThread2023ID,
+  depth = replyDepth,
+  requestDelay = minimumSafeRequestDelay
+) {
+  const OAuth = fs.readFileSync('./OAuth.json', 'utf8');
+  const r = new snoowrap(JSON.parse(OAuth));
+
+  r.config({
+    requestDelay: requestDelay,
+    continueAfterRatelimitError: true,
+  });
+
+  console.log('Fetching thread ...');
+
+  r.getSubmission(threadID)
+    .expandReplies({ limit: Infinity, depth: depth })
+    .then((res) => {
+      const thread = res.toJSON();
+
+      console.log('Got thread!');
+      printTotals(thread);
+      fs.writeFileSync('./results.csv', makeCSV(thread));
+      console.log('Data written to file!');
+    });
 }
 
-function parseThread(threadData) {
+function makeCSV(threadData) {
   const csvOut = [];
   const comments = threadData.comments;
 
@@ -109,37 +131,7 @@ function removeProblemCharacters(text) {
   return text.replace(/[\*,><]+/gm, '').trim();
 }
 
-// Extracting every comment on a thread using API wrapper snoowrap
-function getThread(threadID, depth = Infinity) {
-  const OAuth = fs.readFileSync('./OAuth.json', 'utf8');
-  const r = new snoowrap(JSON.parse(OAuth));
-
-  r.config({
-    requestDelay: minimumSafeRequestDelay,
-    continueAfterRatelimitError: true,
-  });
-
-  console.log('Fetching thread ...');
-
-  r.getSubmission(threadID)
-    .expandReplies({ limit: Infinity, depth: depth })
-    .then((res) => {
-      thread = res.toJSON();
-      console.log('Got thread!');
-      countComments(thread);
-    });
-}
-
-function printBody(thread) {
-  const comments = thread.comments;
-
-  for (let i = 0; i < comments.length; i++) {
-    const comment = comments[i];
-    console.log(comment.body);
-  }
-}
-
-function countComments(thread) {
+function printTotals(thread) {
   const comments = thread.comments;
   let totalTopLevelComments = 0;
   let totalComments = 0;
@@ -154,4 +146,22 @@ function countComments(thread) {
 
   console.log('Total top level comments:', totalTopLevelComments);
   console.log('Total comments:', totalComments);
+}
+
+// Testing data and functions
+const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // using data from file rather than loading live everytime
+const errOut = [];
+// test();
+function test() {
+  fs.writeFileSync('./output.csv', makeCSV(testData));
+  fs.writeFileSync('./err.txt', errOut.join('\n'));
+}
+
+function printBody(thread) {
+  const comments = thread.comments;
+
+  for (let i = 0; i < comments.length; i++) {
+    const comment = comments[i];
+    console.log(comment.body);
+  }
 }
