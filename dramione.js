@@ -10,9 +10,8 @@ const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // usin
 let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
 const errOut = [];
 
-writeCSV();
-
-function writeCSV() {
+// test();
+function test() {
   fs.writeFileSync('./output.csv', parseThread(testData));
   fs.writeFileSync('./err.txt', errOut.join('\n'));
 }
@@ -35,7 +34,7 @@ function parseThread(threadData) {
   return csvOut.join('\n');
 
   function getCategory(topLevelComment) {
-    const category = removeCommas(topLevelComment.body);
+    const category = removeProblemCharacters(topLevelComment.body);
 
     return category.startsWith(
       'CATEGORY: Best New Author (published their first'
@@ -51,7 +50,9 @@ function parseThread(threadData) {
       const reply = replies[i];
       const parsedBody = extractInfoWithRegex(reply.body);
 
-      if (parsedBody.includes('FixMe')) errOut.push(reply.body);
+      if (parsedBody.includes('FixMe')) {
+        errOut.push(`${category}\n${reply.body}`);
+      }
       res.push(`${category},${parsedBody},${reply.ups}`);
     }
 
@@ -59,7 +60,7 @@ function parseThread(threadData) {
   }
 
   function parseBody(commentBody) {
-    const lines = removeCommas(commentBody).split('\n');
+    const lines = removeProblemCharacters(commentBody).split('\n');
     let title, author, link;
 
     for (const line of lines) {
@@ -78,27 +79,34 @@ function parseThread(threadData) {
 
     return `${title},${author},${link}`;
   }
-
-  function extractInfoWithRegex(commentBody) {
-    const text = removeCommas(commentBody);
-
-    const titleMatch = text.match(/Title: (.+)\n/);
-    const authorMatch = text.match(/Author: (.+)\n/);
-    const linkMatch = text.match(/Link: (.+)/);
-
-    const title = titleMatch ? titleMatch[1] : 'FixMe';
-    const author = authorMatch ? authorMatch[1] : 'FixMe';
-    const link = linkMatch ? linkMatch[1] : 'FixMe';
-
-    // if (title === 'FixMe' || author === 'FixMe' || link === 'FixMe')
-    // console.log(commentBody);
-
-    return `${title},${author},${link}`;
-  }
 }
 
-function removeCommas(text) {
-  return text.replace(/,/g, '');
+function extractInfoWithRegex(commentBody) {
+  const text = removeProblemCharacters(commentBody);
+
+  const isRemoved = text.match(/\[removed\]/);
+  if (isRemoved) {
+    return `[removed],,`;
+  }
+
+  const titleMatch = text.match(/Title *: *(.+)\n/i);
+  const authorMatch = text.match(/Author *: *(.+)\n/i);
+  const linkMatch = text.match(/Link *: *(.+)/i);
+
+  const title = titleMatch ? titleMatch[1] : 'FixMe';
+  const author = authorMatch ? authorMatch[1] : 'FixMe';
+  const link = linkMatch ? linkMatch[1] : 'FixMe';
+
+  const output = `${title},${author},${link}`;
+
+  if (output.includes('FixMe'))
+    return `FixMe,${text.replace(/[\r\n]+/gm, ' ')},`;
+
+  return output;
+}
+
+function removeProblemCharacters(text) {
+  return text.replace(/[\*,><]+/gm, '').trim();
 }
 
 // Extracting every comment on a thread using API wrapper snoowrap
