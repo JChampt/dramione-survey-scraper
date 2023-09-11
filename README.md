@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Reddit Comment Scraper is a Node.js script that extracts comments from a Reddit thread using the snoowrap API wrapper. It focuses on extracting top-level comments and one layer of replies from a specified Reddit thread. 
+The Reddit Comment Scraper is a Node.js script that extracts comments from a Reddit thread using the [snoowrap API wrapper](https://not-an-aardvark.github.io/snoowrap/index.html). It focuses on extracting top-level comments and one layer of replies from a specified Reddit thread. 
 
 ## Getting Started
 
@@ -55,3 +55,15 @@ node dramione.js 163lqu4 3 500
 
 ## Explanation & Resources
 
+The majority of the time spent on this project was trying to figure out how to get all of the comment data from a Reddit thread.  The two main options were to either scrape the html or use Reddit's API.  Both options have their own hurdles.  For this project I ended up using the Reddit API.  
+
+What I learned was that if you make a call via the api for the comments on a thread you don't get all of the comments.  You get some of the comments along with several 'more' lists with more comment IDs.  This made navigating the json data I was getting from the Reddit api really confusing (to me at least).  In the end I learned that you should use an API wrapper to handle all of the boilerplate code of dealing with Reddit's API.  
+
+I ended up doing all of this in Javascript because that is what I am most comfortable, but you could ues python as well.  If you were to do this in python I would use [PRAW](https://praw.readthedocs.io/en/stable/).  
+
+#### Here are the resources I found to be really useful in setting all of this up
+- [Reddit API Tutorial](https://youtu.be/x9boO9x3TDA?si=EDtX-PRCd2Xcal7P)
+- [Using the Reddit API, Javascript and Snoowrap to Make an Automatic Link Poster](https://youtu.be/kDYSt4dSnIo?si=Ioo2vzGVSDrWMM1M)
+- [snoowrap documentation](https://not-an-aardvark.github.io/snoowrap/index.html)
+- [reddit api documentation](https://www.reddit.com/dev/api)
+- [Reddit OAuth example](https://github.com/reddit-archive/reddit/wiki/OAuth2-Quick-Start-Example)
