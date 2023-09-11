@@ -3,8 +3,8 @@ const fs = require('fs');
 
 // const megaThread2022ID = 'x60ake';
 const megaThread2023ID = '163lqu4';
-const replyDepth = 2;
-const minimumSafeRequestDelay = 400;
+const replyDepth = 2; // We only need top-level comments and one layer of replies for this project.  Depth 2 gets us that.
+const minimumSafeRequestDelay = 400; // 400 ms delay between requests.  Reddit gets angry if you make too many requests.  400 usually works, can use higher if need be though.
 
 run();
 
@@ -15,6 +15,17 @@ function run(
   requestDelay = minimumSafeRequestDelay
 ) {
   const OAuth = fs.readFileSync('./OAuth.json', 'utf8');
+  /*
+  Oauth object gets passed to the snoowrap object during initialization.  Here is the shape: 
+    {
+      "userAgent": "***",
+      "clientId": "*************",
+      "clientSecret": "***********",
+      "username": "***",
+      "password": "***"
+    }
+  Oauth contains user login details, so it needs to kept in a seperate gitignored file.  See Readme for details. 
+*/
   const r = new snoowrap(JSON.parse(OAuth));
 
   r.config({
@@ -52,34 +63,33 @@ function makeCSV(threadData) {
   }
 
   return csvOut.join('\n');
+}
 
-  function getCategory(topLevelComment) {
-    const category = removeProblemCharacters(topLevelComment.body);
+function getCategory(topLevelComment) {
+  const category = removeProblemCharacters(topLevelComment.body);
 
-    return category.startsWith(
-      'CATEGORY: Best New Author (published their first'
-    )
-      ? 'CATEGORY: Best New Author'
-      : category;
+  return category.startsWith('CATEGORY: Best New Author (published their first')
+    ? 'CATEGORY: Best New Author'
+    : category;
+}
+
+function iterateReplies(category, replies) {
+  const res = [];
+
+  for (let i = 0; i < replies.length; i++) {
+    const reply = replies[i];
+    const parsedBody = extractInfoWithRegex(reply.body);
+
+    res.push(`${category},${parsedBody},${reply.ups}`);
   }
 
-  function iterateReplies(category, replies) {
-    const res = [];
-
-    for (let i = 0; i < replies.length; i++) {
-      const reply = replies[i];
-      const parsedBody = extractInfoWithRegex(reply.body);
-
-      res.push(`${category},${parsedBody},${reply.ups}`);
-    }
-
-    return res;
-  }
+  return res;
 }
 
 function extractInfoWithRegex(commentBody) {
   const text = removeProblemCharacters(commentBody);
 
+  // checking for removed comments
   const isRemoved = text.match(/\[removed\]/);
   if (isRemoved) {
     return `[removed],,`;
@@ -95,12 +105,14 @@ function extractInfoWithRegex(commentBody) {
 
   const output = `${title},${author},${link}`;
 
+  // This tags any line that the regex wasn't able to parse with 'FixMe' and pastes the whole body after that for manual cleanup
   if (output.includes('FixMe'))
     return `FixMe,${text.replace(/[\r\n]+/gm, ' ')},`;
 
   return output;
 }
 
+// some characters cause issues either with the csv file or the regex I am using to parse the comment bodies
 function removeProblemCharacters(text) {
   return text.replace(/[\*,><]+/gm, '').trim();
 }
