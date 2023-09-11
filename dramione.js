@@ -70,9 +70,6 @@ function makeCSV(threadData) {
       const reply = replies[i];
       const parsedBody = extractInfoWithRegex(reply.body);
 
-      if (parsedBody.includes('FixMe')) {
-        errOut.push(`${category}\n${reply.body}`);
-      }
       res.push(`${category},${parsedBody},${reply.ups}`);
     }
 
