@@ -6,8 +6,6 @@ const megaThread2023ID = '163lqu4';
 const replyDepth = 2;
 const minimumSafeRequestDelay = 400;
 
-// let thread; //global variable.  Not ideal but this is how I am doing it until I settle the async portion
-
 run();
 
 // Extracting every comment on a thread using API wrapper snoowrap
@@ -80,27 +78,6 @@ function makeCSV(threadData) {
 
     return res;
   }
-
-  function parseBody(commentBody) {
-    const lines = removeProblemCharacters(commentBody).split('\n');
-    let title, author, link;
-
-    for (const line of lines) {
-      if (line.startsWith('Title: ')) {
-        title = line.substring('Title: '.length).trim();
-      }
-
-      if (line.startsWith('Author: ')) {
-        author = line.substring('Author: '.length).trim();
-      }
-
-      if (line.startsWith('Link: ')) {
-        link = line.substring('Link: '.length).trim();
-      }
-    }
-
-    return `${title},${author},${link}`;
-  }
 }
 
 function extractInfoWithRegex(commentBody) {
@@ -146,22 +123,4 @@ function printTotals(thread) {
 
   console.log('Total top level comments:', totalTopLevelComments);
   console.log('Total comments:', totalComments);
-}
-
-// Testing data and functions
-const testData = JSON.parse(fs.readFileSync('./testData.json', 'utf8')); // using data from file rather than loading live everytime
-const errOut = [];
-// test();
-function test() {
-  fs.writeFileSync('./output.csv', makeCSV(testData));
-  fs.writeFileSync('./err.txt', errOut.join('\n'));
-}
-
-function printBody(thread) {
-  const comments = thread.comments;
-
-  for (let i = 0; i < comments.length; i++) {
-    const comment = comments[i];
-    console.log(comment.body);
-  }
 }
