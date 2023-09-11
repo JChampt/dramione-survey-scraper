@@ -2,10 +2,9 @@
 
 ## Overview
 
-The Reddit Comment Scraper is a Node.js script that extracts comments from a Reddit thread using the [snoowrap API wrapper](https://not-an-aardvark.github.io/snoowrap/index.html). It focuses on extracting top-level comments and one layer of replies from a specified Reddit thread. 
+The Reddit Comment Scraper is a Node.js script that extracts comments from a Reddit thread using the [snoowrap API wrapper](https://not-an-aardvark.github.io/snoowrap/index.html). It focuses on extracting top-level comments and one layer of replies from a specified Reddit thread.
 
 ## Getting Started
-
 
 ### Prerequisites
 
@@ -26,16 +25,17 @@ Before you begin, ensure you have the following dependencies and credentials in 
 
 **Note**: Make sure to keep the OAuth.json file secure and add it to your .gitignore to prevent accidental exposure of your credentials.
 
-
 ### Installation
 
 Clone this repository to your local machine:
-```
+
+```bash
   git clone https://github.com/yourusername/dramione-survey-scraper.git
 ```
 
 Install the required npm packages:
-```
+
+```bash
   npm install
 ```
 
@@ -43,13 +43,13 @@ Install the required npm packages:
 
 To run the Reddit Comment Scraper, you can specify the Reddit thread ID, depth of replies to retrieve, and request delay in milliseconds as arguments. By default, it uses the megaThread2023ID, a depth of 2 for comments, and a request delay of 400ms.
 
-```
+```bash
 node dramione.js [threadID] [depth] [requestDelay]
 ```
 
 For example, to scrape comments from a different Reddit thread with a depth of 3 and a request delay of 500ms:
 
-```
+```bash
 node dramione.js 163lqu4 3 500
 ```
 
@@ -61,7 +61,8 @@ What I learned was that if you make a call via the api for the comments on a thr
 
 I ended up doing all of this in Javascript because that is what I am most comfortable, but you could ues python as well.  If you were to do this in python I would use [PRAW](https://praw.readthedocs.io/en/stable/).  
 
-#### Here are the resources I found to be really useful in setting all of this up
+### Here are the resources I found to be really useful in setting all of this up
+
 - [Reddit API Tutorial](https://youtu.be/x9boO9x3TDA?si=EDtX-PRCd2Xcal7P)
 - [Using the Reddit API, Javascript and Snoowrap to Make an Automatic Link Poster](https://youtu.be/kDYSt4dSnIo?si=Ioo2vzGVSDrWMM1M)
 - [snoowrap documentation](https://not-an-aardvark.github.io/snoowrap/index.html)
