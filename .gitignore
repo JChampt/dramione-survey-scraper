@@ -1,12 +1,4 @@
 node_modules
-./children.txt
 OAuth.json
-thread.json
-redditAPICommentTree.json
-testData.json
-sample - Sheet1.csv
-sample.csv
-output.csv
-reply.json
-err.txt
-results.csv
+results*
+testing*
