@@ -10,7 +10,7 @@ The Reddit Comment Scraper is a Node.js script that extracts comments from a Red
 
 Before you begin, ensure you have the following dependencies and credentials in place:
 
-- Node.js and npm installed on your system.
+- [Node.js and npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) installed on your system.
 - Reddit API credentials stored in an `OAuth.json` file. The format for the `OAuth.json` file is as follows:
 
 ```json
@@ -30,7 +30,7 @@ Before you begin, ensure you have the following dependencies and credentials in 
 Clone this repository to your local machine:
 
 ```bash
-  git clone https://github.com/yourusername/dramione-survey-scraper.git
+  git clone https://github.com/JChampt/dramione-survey-scraper.git
 ```
 
 Install the required npm packages:
