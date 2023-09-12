@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Reddit Comment Scraper is a Node.js script that extracts comments from a Reddit thread using the [snoowrap API wrapper](https://not-an-aardvark.github.io/snoowrap/index.html). It focuses on extracting top-level comments and one layer of replies from a specified Reddit thread.
+This Reddit Comment Scraper is a Node.js script that extracts comments from a Reddit thread using the [snoowrap API wrapper](https://not-an-aardvark.github.io/snoowrap/index.html). It focuses on extracting top-level comments and one layer of replies from a specified Reddit thread.
 
 ## Getting Started
 
